@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Layer Masks")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private LayerMask cornerCorrectionLayer;
     #endregion
 
     #region movement vars
@@ -47,9 +48,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallSlideModifier = 0.35f;
     [SerializeField] private float wallClimbModifier = 0.85f;
     [SerializeField] private float wallJumpXVelocityHaltDelay = 0.2f;
-    private bool wallGrab => onWall && !isGrounded && Input.GetButton("WallGrab") && !wallClimb;
+    private bool wallGrab => onWall && !isGrounded && Input.GetButton("WallGrab");
     private bool wallSlide => onWall && !isGrounded && !Input.GetButton("WallGrab") && rb.velocity.y < 0f && !wallClimb;
-    private bool wallClimb => onWall && move.y > 0f;
+    private bool wallClimb => onWall && move.y > 0f && wallGrab;
     #endregion
 
     #region Collision Variables
@@ -62,8 +63,20 @@ public class PlayerMovement : MonoBehaviour
     #region Wall Collision Variables
     [Header("Wall Collision Variabless")]
     [SerializeField] private float wallRayCastLength;
+    [SerializeField] private Vector3 wallRayCastOffset;
     [SerializeField] private bool onWall;
     [SerializeField] private bool onRightWall;
+    #endregion
+
+    #region Dash Variables
+    [Header("Dash Variables")]
+    [SerializeField] private float dashSpeed = 15f;
+    [SerializeField] private float dashLength = 0.3f;
+    [SerializeField] private float dashBufferLength = 0.1f;
+    [SerializeField] private float dashBufferCounter;
+    [SerializeField] private bool isDashing;
+    [SerializeField] private bool hasDashed;
+    private bool canDash => dashBufferCounter > 0f && !hasDashed;
     #endregion
 
     #region Corner Correction Variables
@@ -98,83 +111,81 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         CheckCollisions();
-        if (canMove) { MoveCharacter(); }
-        else { rb.velocity = Vector2.Lerp(rb.velocity, (new Vector2(move.x * maxSpeed, rb.velocity.y)), 0.5f * Time.deltaTime);}
-        if (isGrounded)
+        if (!isDashing)
         {
-            extraJumpsValue = extraJumps;
-            hangTimeCounter = hangTime;
-            ApplyGroundLinearDrag();
-
-            //Animation
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isFalling", false);
-        }
-        else
-        {
-            ApplyAirLinearDrag();
-            FallMultiplier();
-            hangTimeCounter -= Time.fixedDeltaTime;
-            if(!onWall || rb.velocity.y < 0f || wallClimb) { isJumping = false; }
-        }
-        if (canJump) {
-            if(onWall && !isGrounded)
+            if (canMove) { MoveCharacter(); }
+            else { rb.velocity = Vector2.Lerp(rb.velocity, (new Vector2(move.x * maxSpeed, rb.velocity.y)), 0.5f * Time.deltaTime); }
+            if (isGrounded)
             {
-                if (!wallClimb && (onRightWall && move.x > 0f || !onRightWall && move.x < 0f))
-                {
-                    StartCoroutine(NeutralWallJump());
-                }
-                else
-                {
-                    WallJump();
-                }
-                Flip();
+                hasDashed = false;
+                extraJumpsValue = extraJumps;
+                hangTimeCounter = hangTime;
+                ApplyGroundLinearDrag();
+
+                //Animation
+                animator.SetBool("isJumping", false);
+                animator.SetBool("isFalling", false);
             }
             else
             {
-                Jump(Vector2.up);
+                ApplyAirLinearDrag();
+                FallMultiplier();
+                hangTimeCounter -= Time.fixedDeltaTime;
+                if (!onWall || rb.velocity.y < 0f || wallClimb) { isJumping = false; }
+            }
+            if (canJump)
+            {
+                if (onWall && !isGrounded)
+                {
+                    if (!wallClimb && (onRightWall && move.x > 0f || !onRightWall && move.x < 0f))
+                    {
+                        StartCoroutine(NeutralWallJump());
+                    }
+                    else
+                    {
+                        WallJump();
+                    }
+                    Flip();
+                }
+                else
+                {
+                    Jump(Vector2.up);
+                }
+            }
+            if (!isJumping)
+            {
+                if (wallGrab) { WallGrab(); }
+                if (wallSlide) { WallSlide(); }
+                if (wallClimb) { WallClimb(); }
+                if (onWall) { StickToWall(); }
             }
         }
-        if (!isJumping)
-        {
-            if (wallGrab) { WallGrab(); }
-            if (wallSlide) { WallSlide(); }
-            if (wallClimb) { WallClimb(); }
-            if (onWall) { StickToWall(); }
-        }
-        
-        if (canCornerCorrect)
-        {
-            CornerCorrect(rb.velocity.y);
-        }
+
+        if (canDash) { StartCoroutine(Dash(move.x, move.y)); }
+        if (canCornerCorrect) { CornerCorrect(rb.velocity.y); }
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        //aDebug.Log("x input = " + move.x + ", y input = " + move.y);
         move.x = GetInput().x;
         move.y = GetInput().y;
         CalculateVariables();
-        if (Input.GetButtonDown("Jump"))
-        {
-            jumpBufferCounter = jumpBufferLength;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
+
+        if (Input.GetButtonDown("Jump")) { jumpBufferCounter = jumpBufferLength; }
+        else { jumpBufferCounter -= Time.deltaTime; }
+        if (Input.GetButtonDown("Dash")) { dashBufferCounter = dashBufferLength; }
+        else { dashBufferCounter -= Time.deltaTime; }
+
         //Animation
         animator.SetBool("isGrounded", isGrounded);
         animator.SetFloat("horizontalDirection", Mathf.Abs(move.x));
-        if(move.x < 0f && facingRight)
-        {
-            Flip();
-        }
-        else if (move.x > 0f && !facingRight)
-        {
-            Flip();
-        }
+
+        if(move.x < 0f && facingRight) { Flip(); }
+        else if (move.x > 0f && !facingRight) { Flip(); }
+
         if(rb.velocity.y < 0f)
         {
             animator.SetBool("isJumping", false);
@@ -191,6 +202,7 @@ public class PlayerMovement : MonoBehaviour
     {
         fallMultiplier = jumpForce * gravityFraction;
         lowJumpFallMultiplier = fallMultiplier * 1.5f;
+        if(dashBufferCounter < 0) { dashBufferCounter = 0; }
     }
 
     private void MoveCharacter()
@@ -222,27 +234,48 @@ public class PlayerMovement : MonoBehaviour
     private void CheckCollisions()
     {
         //ground collision
-        isGrounded =    Physics2D.Raycast(transform.position + groundRayCastOffset, Vector2.down, groundRayCastLength, groundLayer) ||
-                        Physics2D.Raycast(transform.position - groundRayCastOffset, Vector2.down, groundRayCastLength, groundLayer);
+        isGrounded =    Physics2D.Raycast(  new Vector3(transform.position.x + groundRayCastOffset.x, 
+                                            transform.position.y + groundRayCastOffset.y, 
+                                            transform.position.z + groundRayCastOffset.z), 
+                                            Vector2.down, 
+                                            groundRayCastLength, 
+                                            groundLayer) ||
+                        Physics2D.Raycast(  new Vector3(transform.position.x - groundRayCastOffset.x, 
+                                            transform.position.y + groundRayCastOffset.y, 
+                                            transform.position.z + groundRayCastOffset.z), 
+                                            Vector2.down, 
+                                            groundRayCastLength, 
+                                            groundLayer);
 
         //corner correction collision
-        canCornerCorrect =  Physics2D.Raycast(transform.position + edgeRayCastOffset, Vector2.up, topRayCastLength, groundLayer) &&
-                            !Physics2D.Raycast(transform.position + innerRayCastOffset, Vector2.up, topRayCastLength, groundLayer) ||
-                            Physics2D.Raycast(transform.position - edgeRayCastOffset, Vector2.up, topRayCastLength, groundLayer) &&
-                            !Physics2D.Raycast(transform.position - innerRayCastOffset, Vector2.up, topRayCastLength, groundLayer);
+        canCornerCorrect =  Physics2D.Raycast(transform.position + edgeRayCastOffset, Vector2.up, topRayCastLength, cornerCorrectionLayer) &&
+                            !Physics2D.Raycast(transform.position + innerRayCastOffset, Vector2.up, topRayCastLength, cornerCorrectionLayer) ||
+                            Physics2D.Raycast(transform.position - edgeRayCastOffset, Vector2.up, topRayCastLength, cornerCorrectionLayer) &&
+                            !Physics2D.Raycast(transform.position - innerRayCastOffset, Vector2.up, topRayCastLength, cornerCorrectionLayer);
 
         //wall collision
-        onWall = Physics2D.Raycast(transform.position, Vector2.right, wallRayCastLength, wallLayer) ||
-                    Physics2D.Raycast(transform.position, Vector2.left, wallRayCastLength, wallLayer);
-        onRightWall = Physics2D.Raycast(transform.position, Vector2.right, wallRayCastLength, wallLayer);
+        onWall = Physics2D.Raycast(transform.position + wallRayCastOffset, Vector2.right, wallRayCastLength, wallLayer) ||
+                    Physics2D.Raycast(transform.position + wallRayCastOffset, Vector2.left, wallRayCastLength, wallLayer);
+        onRightWall = Physics2D.Raycast(transform.position + wallRayCastOffset, Vector2.right, wallRayCastLength, wallLayer);
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         //ground check
-        Gizmos.DrawLine(transform.position + groundRayCastOffset, transform.position + groundRayCastOffset + Vector3.down * groundRayCastLength);
-        Gizmos.DrawLine(transform.position - groundRayCastOffset, transform.position - groundRayCastOffset + Vector3.down * groundRayCastLength);
+        Gizmos.DrawLine(    new Vector3(transform.position.x + groundRayCastOffset.x, 
+                            transform.position.y + groundRayCastOffset.y,
+                            transform.position.z + groundRayCastOffset.z),
+                            new Vector3(transform.position.x + groundRayCastOffset.x, 
+                            transform.position.y + groundRayCastOffset.y, 
+                            transform.position.z + groundRayCastOffset.z) + Vector3.down * groundRayCastLength);
+
+        Gizmos.DrawLine(    new Vector3(transform.position.x - groundRayCastOffset.x, 
+                            transform.position.y + groundRayCastOffset.y,
+                            transform.position.z + groundRayCastOffset.z),
+                            new Vector3(transform.position.x - groundRayCastOffset.x, 
+                            transform.position.y + groundRayCastOffset.y, 
+                            transform.position.z + groundRayCastOffset.z) + Vector3.down * groundRayCastLength);
 
         //corner check
         Gizmos.DrawLine(transform.position + edgeRayCastOffset, transform.position + edgeRayCastOffset + Vector3.up * topRayCastLength);
@@ -257,8 +290,8 @@ public class PlayerMovement : MonoBehaviour
                         transform.position + innerRayCastOffset + Vector3.up * topRayCastLength + Vector3.right * topRayCastLength);
 
         //wall check
-        Gizmos.DrawLine(transform.position, transform.position + Vector3.right * wallRayCastLength);
-        Gizmos.DrawLine(transform.position, transform.position + Vector3.left * wallRayCastLength);
+        Gizmos.DrawLine(transform.position + wallRayCastOffset, transform.position + wallRayCastOffset + Vector3.right * wallRayCastLength);
+        Gizmos.DrawLine(transform.position + wallRayCastOffset, transform.position + wallRayCastOffset + Vector3.left * wallRayCastLength);
     }
 
     private void Jump(Vector2 direction)
@@ -279,6 +312,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("isJumping", true);
         animator.SetBool("isFalling", false);
     }
+    
     #region Wall Movement
     private void WallJump()
     {
@@ -337,21 +371,22 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.gravityScale = fallMultiplier;
         }
+        else if (hasDashed && !isDashing)
+        {
+            rb.gravityScale = fallMultiplier;
+        }
         else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
         {
             rb.velocity *= 0.9f;
             rb.gravityScale = lowJumpFallMultiplier;
         }
-        else
-        {
-            rb.gravityScale *= 1;
-        }
+        else { rb.gravityScale *= 1; }
     }
 
     private void CornerCorrect(float Yvelocity)
     {
         //push player to the right
-        RaycastHit2D hit = Physics2D.Raycast(transform.position - innerRayCastOffset + Vector3.up * topRayCastLength, Vector3.left, topRayCastLength, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position - innerRayCastOffset + Vector3.up * topRayCastLength, Vector3.left, topRayCastLength, cornerCorrectionLayer);
         if(hit.collider != null)
         {
             float newPos = Vector3.Distance(new Vector3(hit.point.x, transform.position.y, 0f) + Vector3.up * topRayCastLength,
@@ -370,6 +405,31 @@ public class PlayerMovement : MonoBehaviour
             transform.position = new Vector3(transform.position.x - newPos, transform.position.y, transform.position.z);
             rb.velocity = new Vector2(rb.velocity.x, Yvelocity);
         }
+    }
+
+    IEnumerator Dash(float x, float y)
+    {
+        float dashStartTime = Time.time;
+        hasDashed = true;
+        isDashing = true;
+        isGrounded = false;
+        isJumping = false;
+        rb.velocity = Vector2.zero;
+        rb.gravityScale = 0f;
+        rb.drag = 0f;
+        Vector2 dir;
+        if(x != 0f && y != 0f) { dir = new Vector2(x, y); } 
+        else
+        {
+            if (facingRight) { dir = new Vector2(1f, 0); }
+            else { dir = new Vector2(-1f, 0); }
+        }
+        while(Time.time < dashStartTime + dashLength)
+        {
+            rb.velocity = dir.normalized * dashSpeed;
+            yield return null;
+        }
+        isDashing = false;
     }
 
     private void Flip()

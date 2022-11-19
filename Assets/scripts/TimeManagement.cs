@@ -5,11 +5,12 @@ using UnityEngine;
 public class TimeManagement : MonoBehaviour
 {
     bool waiting = false;
+    bool slowmo = false;
     public float currentTimeScale = 1.0f;
 
     public void Stop(float duration)
     {
-        if(waiting) return;
+        if (waiting) { return; }
         Time.timeScale = 0.0f;
         StartCoroutine(Wait(duration));
     }
@@ -35,13 +36,25 @@ public class TimeManagement : MonoBehaviour
         }
     }
 
-    public void Reset()
-    {
-        Time.timeScale = 1.0f;
-    }
+    public void ResetTimeScale() { Time.timeScale = 1.0f; }
     public void SetTimeScale(float newTimeScale)
     {
         currentTimeScale = newTimeScale;
         Time.timeScale = currentTimeScale;
+    }
+
+    public void SlowMotion(float duration, float slowAmount)
+    {
+        if (slowmo) { return; }
+        Time.timeScale = slowAmount;
+        StartCoroutine(SlowMotion(duration));
+    }
+
+    IEnumerator SlowMotion(float duration)
+    {
+        slowmo = true;
+        yield return new WaitForSeconds(duration);
+        Time.timeScale = currentTimeScale;
+        slowmo = false;
     }
 }
