@@ -137,20 +137,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (onWall && !isGrounded)
                 {
-                    if (!wallClimb && (onRightWall && move.x > 0f || !onRightWall && move.x < 0f))
-                    {
-                        StartCoroutine(NeutralWallJump());
-                    }
-                    else
-                    {
-                        WallJump();
-                    }
+                    if (!wallClimb && (onRightWall && move.x > 0f || !onRightWall && move.x < 0f)) { StartCoroutine(NeutralWallJump()); }
+                    else { WallJump(); }
                     Flip();
                 }
-                else
-                {
-                    Jump(Vector2.up);
-                }
+                else { Jump(Vector2.up); }
             }
             if (!isJumping)
             {
@@ -169,7 +160,6 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //aDebug.Log("x input = " + move.x + ", y input = " + move.y);
         move.x = GetInput().x;
         move.y = GetInput().y;
         CalculateVariables();
@@ -380,7 +370,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity *= 0.9f;
             rb.gravityScale = lowJumpFallMultiplier;
         }
-        else { rb.gravityScale *= 1; }
+        else { rb.gravityScale = 1f; }
     }
 
     private void CornerCorrect(float Yvelocity)
