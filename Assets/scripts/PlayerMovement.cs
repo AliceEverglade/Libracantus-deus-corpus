@@ -357,17 +357,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FallMultiplier()
     {
-        if (rb.velocity.y <= 0)
-        {
-            rb.gravityScale = fallMultiplier;
-        }
-        else if (hasDashed && !isDashing)
-        {
-            rb.gravityScale = fallMultiplier;
-        }
+        if (rb.velocity.y <= 0) { rb.gravityScale = fallMultiplier; }
+        else if (hasDashed && !isDashing) { rb.gravityScale = fallMultiplier; }
         else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
         {
-            rb.velocity *= 0.9f;
+            //rb.velocity *= 0.9f;
             rb.gravityScale = lowJumpFallMultiplier;
         }
         else { rb.gravityScale = 1f; }
@@ -428,3 +422,4 @@ public class PlayerMovement : MonoBehaviour
         transform.Rotate(0f, 180f, 0f);
     }
 }
+ 
