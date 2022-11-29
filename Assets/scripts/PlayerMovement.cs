@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -93,18 +94,39 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gravityFraction = 0.3f;
     #endregion
 
+    #region Combat Variables
+    [Header("Combat Variables")]
+    [SerializeField] private bool isAttacking;
+    [SerializeField] private bool attack1Done;
+    [SerializeField] private bool attack2Done;
+    [SerializeField] private float lastClickedTime;
+    [SerializeField] private float maxComboDelay;
+    #endregion
+
     #region Animation Variables
     [Header("Animation Variables")]
     [SerializeField] private bool facingRight;
     #endregion
 
+    #region Enables and Disable functions
+    private void OnEnable()
+    {
+        
+    }
+    private void OnDisable()
+    {
+        
+    }
+    #endregion
 
+    #region Start function
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
+    #endregion
 
     #region Fixed Update and Update
     //Fixed Update is called once per time interval
@@ -164,6 +186,7 @@ public class PlayerMovement : MonoBehaviour
         move.y = GetInput().y;
         CalculateVariables();
 
+        if (Input.GetButtonDown("Attack")) { Attack(); }
         if (Input.GetButtonDown("Jump")) { jumpBufferCounter = jumpBufferLength; }
         else { jumpBufferCounter -= Time.deltaTime; }
         if (Input.GetButtonDown("Dash")) { dashBufferCounter = dashBufferLength; }
@@ -287,10 +310,7 @@ public class PlayerMovement : MonoBehaviour
     private void Jump(Vector2 direction)
     {
 
-        if (hangTimeCounter < 0 && !onWall)
-        {
-            extraJumpsValue--;
-        }
+        if (hangTimeCounter < 0 && !onWall) { extraJumpsValue--; }
         hangTimeCounter = 0f;
         jumpBufferCounter = 0f;
         isJumping = true;
@@ -414,6 +434,16 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
         isDashing = false;
+    }
+
+    private void Attack()
+    {
+        
+        if (!isAttacking)
+        {
+            isAttacking = true;
+
+        }
     }
 
     private void Flip()
