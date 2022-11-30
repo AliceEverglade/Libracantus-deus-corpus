@@ -26,6 +26,22 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 move;
     private bool changingDirection => (rb.velocity.x > 0f && move.x < 0f || rb.velocity.x < 0f && move.x > 0f);
     private bool canMove => !wallGrab;
+
+    private float HorizontalDirection
+    {
+        get
+        {
+            return move.x;
+        }
+        set
+        {
+            if(move.x != value)
+            {
+                move.x = value;
+                
+            }
+        }
+    }
     #endregion
 
     #region jump vars
@@ -59,6 +75,23 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundRayCastLength;
     [SerializeField] private Vector3 groundRayCastOffset;
     [SerializeField] private bool isGrounded;
+
+    private bool IsGrounded
+    {
+        get
+        {
+            return isGrounded;
+        }
+        set
+        {
+            if(isGrounded != value)
+            {
+                isGrounded = value;
+                Grounded(value);
+            }
+            
+        }
+    }
     #endregion
 
     #region Wall Collision Variables
@@ -108,6 +141,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool facingRight;
     #endregion
 
+    #region Actions
+    public static event Action Jumping;
+    public static event Action Falling;
+    public static event Action Standing;
+    public static event Action<bool> Grounded;
+    public static event Action<float> Moving;
+    #endregion
+
     #region Enables and Disable functions
     private void OnEnable()
     {
@@ -145,8 +186,7 @@ public class PlayerMovement : MonoBehaviour
                 ApplyGroundLinearDrag();
 
                 //Animation
-                animator.SetBool("isJumping", false);
-                animator.SetBool("isFalling", false);
+                Standing();
             }
             else
             {
@@ -201,8 +241,7 @@ public class PlayerMovement : MonoBehaviour
 
         if(rb.velocity.y < 0f)
         {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isFalling", true);
+            Falling();
         }
     }
     #endregion
@@ -216,6 +255,7 @@ public class PlayerMovement : MonoBehaviour
         fallMultiplier = jumpForce * gravityFraction;
         lowJumpFallMultiplier = fallMultiplier * 1.5f;
         if(dashBufferCounter < 0) { dashBufferCounter = 0; }
+        if(Mathf.Abs(rb.velocity.x) > 0) { animator.SetFloat("runSpeed", rb.velocity.x / maxSpeed); }
     }
 
     private void MoveCharacter()
@@ -319,8 +359,7 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(direction * jumpForce, ForceMode2D.Impulse);
 
         //Animation
-        animator.SetBool("isJumping", true);
-        animator.SetBool("isFalling", false);
+        Jumping();
     }
     
     #region Wall Movement
@@ -381,7 +420,7 @@ public class PlayerMovement : MonoBehaviour
         else if (hasDashed && !isDashing) { rb.gravityScale = fallMultiplier; }
         else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
         {
-            //rb.velocity *= 0.9f;
+            rb.velocity *= 0.9f;
             rb.gravityScale = lowJumpFallMultiplier;
         }
         else { rb.gravityScale = 1f; }
