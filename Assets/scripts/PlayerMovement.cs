@@ -24,21 +24,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float acceleration;
     [SerializeField] private float groundLinearDrag;
     private Vector2 move;
-    private bool changingDirection => (rb.velocity.x > 0f && move.x < 0f || rb.velocity.x < 0f && move.x > 0f);
+    private bool changingDirection => (rb.velocity.x > 0f && HorizontalDirection < 0f || rb.velocity.x < 0f && HorizontalDirection > 0f);
     private bool canMove => !wallGrab;
 
     private float HorizontalDirection
     {
         get
         {
-            return move.x;
+            return this.move.x;
         }
         set
         {
-            if(move.x != value)
+            if(this.move.x != value)
             {
-                move.x = value;
-                
+                this.move.x = value;
+                Moving(value);
             }
         }
     }
@@ -65,8 +65,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallSlideModifier = 0.35f;
     [SerializeField] private float wallClimbModifier = 0.85f;
     [SerializeField] private float wallJumpXVelocityHaltDelay = 0.2f;
-    private bool wallGrab => onWall && !isGrounded && Input.GetButton("WallGrab");
-    private bool wallSlide => onWall && !isGrounded && !Input.GetButton("WallGrab") && rb.velocity.y < 0f && !wallClimb;
+    private bool wallGrab => onWall && !IsGrounded && Input.GetButton("WallGrab");
+    private bool wallSlide => onWall && !IsGrounded && !Input.GetButton("WallGrab") && rb.velocity.y < 0f && !wallClimb;
     private bool wallClimb => onWall && move.y > 0f && wallGrab;
     #endregion
 
@@ -89,7 +89,6 @@ public class PlayerMovement : MonoBehaviour
                 isGrounded = value;
                 Grounded(value);
             }
-            
         }
     }
     #endregion
@@ -177,8 +176,8 @@ public class PlayerMovement : MonoBehaviour
         if (!isDashing)
         {
             if (canMove) { MoveCharacter(); }
-            else { rb.velocity = Vector2.Lerp(rb.velocity, (new Vector2(move.x * maxSpeed, rb.velocity.y)), 0.5f * Time.deltaTime); }
-            if (isGrounded)
+            else { rb.velocity = Vector2.Lerp(rb.velocity, (new Vector2(HorizontalDirection * maxSpeed, rb.velocity.y)), 0.5f * Time.deltaTime); }
+            if (IsGrounded)
             {
                 hasDashed = false;
                 extraJumpsValue = extraJumps;
@@ -197,9 +196,9 @@ public class PlayerMovement : MonoBehaviour
             }
             if (canJump)
             {
-                if (onWall && !isGrounded)
+                if (onWall && !IsGrounded)
                 {
-                    if (!wallClimb && (onRightWall && move.x > 0f || !onRightWall && move.x < 0f)) { StartCoroutine(NeutralWallJump()); }
+                    if (!wallClimb && (onRightWall && HorizontalDirection > 0f || !onRightWall && HorizontalDirection < 0f)) { StartCoroutine(NeutralWallJump()); }
                     else { WallJump(); }
                     Flip();
                 }
@@ -214,7 +213,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if (canDash) { StartCoroutine(Dash(move.x, move.y)); }
+        if (canDash) { StartCoroutine(Dash(HorizontalDirection, move.y)); }
         if (canCornerCorrect) { CornerCorrect(rb.velocity.y); }
     }
 
@@ -222,7 +221,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        move.x = GetInput().x;
+        HorizontalDirection = GetInput().x;
         move.y = GetInput().y;
         CalculateVariables();
 
@@ -233,11 +232,11 @@ public class PlayerMovement : MonoBehaviour
         else { dashBufferCounter -= Time.deltaTime; }
 
         //Animation
-        animator.SetBool("isGrounded", isGrounded);
-        animator.SetFloat("horizontalDirection", Mathf.Abs(move.x));
+        animator.SetBool("IsGrounded", IsGrounded);
+        animator.SetFloat("horizontalDirection", Mathf.Abs(HorizontalDirection));
 
-        if(move.x < 0f && facingRight) { Flip(); }
-        else if (move.x > 0f && !facingRight) { Flip(); }
+        if(HorizontalDirection < 0f && facingRight) { Flip(); }
+        else if (HorizontalDirection > 0f && !facingRight) { Flip(); }
 
         if(rb.velocity.y < 0f)
         {
@@ -260,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MoveCharacter()
     {
-        rb.AddForce(new Vector2(move.x, 0) * acceleration);
+        rb.AddForce(new Vector2(HorizontalDirection, 0) * acceleration);
         float xVel = rb.velocity.x;
         xVel = Mathf.Clamp(xVel, -maxSpeed, maxSpeed);
         rb.velocity = new Vector2(xVel, rb.velocity.y);
@@ -269,7 +268,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyGroundLinearDrag()
     {
-        if(Mathf.Abs(move.x) < 0.4f || changingDirection)
+        if(Mathf.Abs(HorizontalDirection) < 0.4f || changingDirection)
         {
             rb.drag = groundLinearDrag;
         }
@@ -287,7 +286,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckCollisions()
     {
         //ground collision
-        isGrounded =    Physics2D.Raycast(  new Vector3(transform.position.x + groundRayCastOffset.x, 
+        IsGrounded =    Physics2D.Raycast(  new Vector3(transform.position.x + groundRayCastOffset.x, 
                                             transform.position.y + groundRayCastOffset.y, 
                                             transform.position.z + groundRayCastOffset.z), 
                                             Vector2.down, 
@@ -395,11 +394,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void StickToWall()
     {
-        if (onRightWall && move.x >= 0f)
+        if (onRightWall && HorizontalDirection >= 0f)
         {
             rb.velocity = new Vector2(1f, rb.velocity.y);
         }
-        else if (onRightWall && move.x >= 0f)
+        else if (onRightWall && HorizontalDirection >= 0f)
         {
             rb.velocity = new Vector2(-1f, rb.velocity.y);
         }
@@ -455,7 +454,7 @@ public class PlayerMovement : MonoBehaviour
         float dashStartTime = Time.time;
         hasDashed = true;
         isDashing = true;
-        isGrounded = false;
+        IsGrounded = false;
         isJumping = false;
         rb.velocity = Vector2.zero;
         rb.gravityScale = 0f;

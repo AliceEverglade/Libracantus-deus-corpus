@@ -12,6 +12,7 @@ public class PlayerAnimations : MonoBehaviour
         PlayerMovement.Falling += FallingAnimation;
         PlayerMovement.Grounded += IsGrounded;
         PlayerMovement.Moving += WalkingAnimation;
+        PlayerMovement.Standing += IdleAnimation;
     }
     private void OnDisable()
     {
@@ -19,11 +20,12 @@ public class PlayerAnimations : MonoBehaviour
         PlayerMovement.Falling -= FallingAnimation;
         PlayerMovement.Grounded -= IsGrounded;
         PlayerMovement.Moving -= WalkingAnimation;
+        PlayerMovement.Standing -= IdleAnimation;
     }
     // Start is called before the first frame update
     void Start()
     {
-        
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -34,6 +36,7 @@ public class PlayerAnimations : MonoBehaviour
 
     private void IsGrounded(bool isGrounded)
     {
+        Debug.Log("grounded info updated");
         animator.SetBool("isGrounded", isGrounded);
     }
     
