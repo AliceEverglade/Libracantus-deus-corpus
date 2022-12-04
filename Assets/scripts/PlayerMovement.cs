@@ -254,7 +254,7 @@ public class PlayerMovement : MonoBehaviour
         fallMultiplier = jumpForce * gravityFraction;
         lowJumpFallMultiplier = fallMultiplier * 1.5f;
         if(dashBufferCounter < 0) { dashBufferCounter = 0; }
-        if(Mathf.Abs(rb.velocity.x) > 0) { animator.SetFloat("runSpeed", rb.velocity.x / maxSpeed); }
+        if(Mathf.Abs(rb.velocity.x) > 0.1f) { animator.SetFloat("runSpeed", rb.velocity.x / maxSpeed); }
     }
 
     private void MoveCharacter()

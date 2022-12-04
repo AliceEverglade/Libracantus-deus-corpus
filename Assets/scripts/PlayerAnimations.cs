@@ -48,7 +48,8 @@ public class PlayerAnimations : MonoBehaviour
 
     private void WalkingAnimation(float horizontalDirection)
     {
-        animator.SetFloat("HorizontalMovement", horizontalDirection);
+        Debug.Log(horizontalDirection);
+        animator.SetFloat("HorizontalDirection", Mathf.Abs(horizontalDirection));
     }
 
     private void JumpingAnimation()
