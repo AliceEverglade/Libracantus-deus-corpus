@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector3 groundRayCastOffset;
     [SerializeField] private bool isGrounded;
 
-    private bool IsGrounded
+    public bool IsGrounded
     {
         get
         {
@@ -146,6 +146,7 @@ public class PlayerMovement : MonoBehaviour
     public static event Action Standing;
     public static event Action<bool> Grounded;
     public static event Action<float> Moving;
+    public static event Action dashing;
     #endregion
 
     #region Enables and Disable functions
@@ -415,8 +416,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FallMultiplier()
     {
-        if (rb.velocity.y <= 0) { rb.gravityScale = fallMultiplier; }
-        else if (hasDashed && !isDashing) { rb.gravityScale = fallMultiplier; }
+        if (rb.velocity.y <= 0) { rb.gravityScale = fallMultiplier; Falling(); }
+        else if (hasDashed && !isDashing) { rb.gravityScale = fallMultiplier; Falling(); }
         else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
         {
             rb.velocity *= 0.9f;
@@ -452,6 +453,7 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Dash(float x, float y)
     {
         float dashStartTime = Time.time;
+        dashing();
         hasDashed = true;
         isDashing = true;
         IsGrounded = false;

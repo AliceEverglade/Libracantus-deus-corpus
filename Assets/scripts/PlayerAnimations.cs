@@ -13,6 +13,7 @@ public class PlayerAnimations : MonoBehaviour
         PlayerMovement.Grounded += IsGrounded;
         PlayerMovement.Moving += WalkingAnimation;
         PlayerMovement.Standing += IdleAnimation;
+        PlayerMovement.dashing += DashingAnimation;
     }
     private void OnDisable()
     {
@@ -21,6 +22,7 @@ public class PlayerAnimations : MonoBehaviour
         PlayerMovement.Grounded -= IsGrounded;
         PlayerMovement.Moving -= WalkingAnimation;
         PlayerMovement.Standing -= IdleAnimation;
+        PlayerMovement.dashing -= DashingAnimation;
     }
     // Start is called before the first frame update
     void Start()
@@ -64,7 +66,12 @@ public class PlayerAnimations : MonoBehaviour
         animator.SetBool("isFalling", true);
     }
 
-    private void AttackingAnimation()
+    private void DashingAnimation()
+    {
+        animator.SetBool("isDashing", true);
+    }
+
+    private void AttackingAnimation(int attackNumber)
     {
 
     }
