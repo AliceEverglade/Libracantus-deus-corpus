@@ -39,7 +39,7 @@ InputManager:
     joyNum: 0
   - serializedVersion: 3
     m_Name: Attack
-    descriptiveName: a melee attack
+    descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: f
@@ -138,9 +138,9 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: left ctrl
+    positiveButton: '`'
     altNegativeButton: 
-    altPositiveButton: joystick button 8
+    altPositiveButton: 
     gravity: 0
     dead: 0
     sensitivity: 0
