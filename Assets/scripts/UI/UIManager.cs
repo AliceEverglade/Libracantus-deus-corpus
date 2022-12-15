@@ -35,7 +35,6 @@ public class UIManager : MonoBehaviour
 
     private void TimerUpdate(float duration)
     {
-        Debug.Log(duration);
         timerText.text = (Mathf.Round(duration)).ToString();
     }
 

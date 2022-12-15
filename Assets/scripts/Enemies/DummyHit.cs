@@ -20,8 +20,8 @@ public class DummyHit : MonoBehaviour
 
     public static event Action AddScore;
     public static event Action<float> DamagePlayer;
+
     [SerializeField] private float movementSpeed = 30;
-    [SerializeField] private float movementDirection = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -48,11 +48,11 @@ public class DummyHit : MonoBehaviour
         {
             animDelayValue -= Time.deltaTime;
         }
-
     }
+
     private void Move()
     {
-        rb.velocity = new Vector2(movementDirection * movementSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(movementSpeed, rb.velocity.y);
     }
 
     public void TakeDamage(float damage)
@@ -61,7 +61,6 @@ public class DummyHit : MonoBehaviour
         animDelayValue = animDelay;
         if(currentHP - damage <= 0)
         {
-            Debug.Log("Dummy Dead");
             AddScore();
             Destroy(gameObject);
         }
@@ -88,18 +87,6 @@ public class DummyHit : MonoBehaviour
         else
         {
             healTimerValue -= Time.deltaTime;
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            DamagePlayer(damage);
-        }
-        if (collision.gameObject.CompareTag("Wall"))
-        {
-            movementDirection *= -1;
         }
     }
 }

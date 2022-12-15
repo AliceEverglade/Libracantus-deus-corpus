@@ -13,9 +13,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private int dartCount = 10;
     [SerializeField] private float castTime = 2f;
 
-    private bool canAttack => attackResetCounter > 0;
-    private bool resetAttack => attackResetCounter < 0;
     [SerializeField] private bool isAttacking;
+    [SerializeField] private bool attackClicked;
     private bool isGrounded;
     [SerializeField] private float attackResetCounter = -1f;
     private float attackResetCounterMax = 3f;
@@ -50,34 +49,22 @@ public class PlayerCombat : MonoBehaviour
 
     private void CheckAttack()
     {
-
-
-        //single attack test
-        /*if (Input.GetButtonDown("Attack"))
-        {
-            Debug.Log("Attack Called");
-            isAttacking = true;
-            AttackCall();
-        }*/
-
-
-
         if (Input.GetButtonDown("Attack"))
         {
-            Debug.Log("Attack Called");
+            attackClicked = true;
             attackResetCounter = attackResetCounterMax;
         }
         if (attackResetCounter > -0.1f)
         {
             attackResetCounter -= Time.deltaTime;
         }
-        if (canAttack && !isAttacking)
+        if (attackResetCounter > 0 && !isAttacking && attackClicked)
         {
-            Debug.Log("Attack Initiated");
             isAttacking = true;
+            attackClicked = false;
             AttackCall();
         }
-        if (resetAttack)
+        if (attackResetCounter < 0)
         {
             ComboReset();
         }
@@ -86,7 +73,6 @@ public class PlayerCombat : MonoBehaviour
     private void AttackCall()
     {
         Attack(attackNumber);
-
         switch (attackNumber)
         {
             case 1:
@@ -104,7 +90,6 @@ public class PlayerCombat : MonoBehaviour
     private void ComboReset()
     {
         attackNumber = 1;
-        EndAttack();
     }
 
     private void CheckMagicalAttack()
@@ -122,7 +107,6 @@ public class PlayerCombat : MonoBehaviour
         {
             yield return new WaitForSeconds(1/dartCount * castTime);
             Instantiate(dart, transform.position,Quaternion.Euler(0,0,RNG.Next(0,360)));
-            Debug.Log("Missle Fired");
         }
     }
 

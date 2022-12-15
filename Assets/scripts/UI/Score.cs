@@ -24,7 +24,6 @@ public class Score : MonoBehaviour
     void Start()
     {
         score = 0;
-        Debug.Log("timer initiated");
         StartTimer(TimerDuration);
     }
 

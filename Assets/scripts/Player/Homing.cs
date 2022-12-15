@@ -7,7 +7,7 @@ public class Homing : MonoBehaviour
 {
     [SerializeField] private Transform target;
     [SerializeField] private GameObject[] targetList;
-    //[SerializeField] private GameObject deathEffect;]
+    //[SerializeField] private GameObject deathEffect;
 
     [SerializeField] private float speed = 7;
     [SerializeField] private float rotateSpeed = 200;
@@ -65,7 +65,6 @@ public class Homing : MonoBehaviour
     {
         if (collision.CompareTag("Enemy"))
         {
-            Debug.Log("Missle Destroyed");
             collision.gameObject.GetComponent<DummyHit>().TakeDamage(damage);
             Destroy(gameObject);
         }

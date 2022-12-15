@@ -76,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundRayCastLength;
     [SerializeField] private Vector3 groundRayCastOffset;
     [SerializeField] private bool isGrounded;
+    [SerializeField] private bool colliderOff;
 
     public bool IsGrounded
     {
@@ -233,8 +234,8 @@ public class PlayerMovement : MonoBehaviour
         else { dashBufferCounter -= Time.deltaTime; }
 
         //Animation
-        animator.SetBool("IsGrounded", IsGrounded);
-        animator.SetFloat("horizontalDirection", Mathf.Abs(HorizontalDirection));
+        animator.SetBool("isGrounded", IsGrounded);
+        animator.SetFloat("HorizontalDirection", Mathf.Abs(HorizontalDirection));
 
         if(HorizontalDirection < 0f && facingRight) { Flip(); }
         else if (HorizontalDirection > 0f && !facingRight) { Flip(); }
@@ -487,10 +488,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void FallThroughPlatform()
     {
-        if(platformCollider != null)
+        if(move.y < 0 && !colliderOff)
         {
-            platformCollider.enabled = move.y < 0 ? false : true;
+            colliderOff = true;
+            StartCoroutine(DisableCollider());
         }
+        
+    }
+
+    IEnumerator DisableCollider()
+    {
+        platformCollider.enabled = false;
+        yield return new WaitForSeconds(0.3f);
+        platformCollider.enabled = true;
+        colliderOff = false;
     }
 }
  

@@ -44,7 +44,6 @@ public class PlayerAnimations : MonoBehaviour
 
     private void IsGrounded(bool isGrounded)
     {
-        Debug.Log("grounded info updated");
         animator.SetBool("isGrounded", isGrounded);
     }
     
@@ -56,7 +55,6 @@ public class PlayerAnimations : MonoBehaviour
 
     private void WalkingAnimation(float horizontalDirection)
     {
-        Debug.Log(horizontalDirection);
         animator.SetFloat("HorizontalDirection", Mathf.Abs(horizontalDirection));
     }
 
@@ -78,17 +76,25 @@ public class PlayerAnimations : MonoBehaviour
     }
     private void AttackingAnimation(int attackNumber)
     {
-        Debug.Log("Attack Animations Started");
-        animator.SetBool("isAttacking", true);
+        animator.SetTrigger("isAttacking");
         switch (attackNumber)
         {
             case 1:
+                Debug.Log("attack 1 animation started");
                 animator.SetBool("attack1", true);
+                animator.SetBool("attack2", false);
+                animator.SetBool("attack3", false);
                 break;
             case 2:
+                Debug.Log("attack 2 animation started");
+                animator.SetBool("attack1", false);
                 animator.SetBool("attack2", true);
+                animator.SetBool("attack3", false);
                 break;
             case 3:
+                Debug.Log("attack 3 animation started");
+                animator.SetBool("attack1", false);
+                animator.SetBool("attack2", false);
                 animator.SetBool("attack3", true);
                 break;
         }

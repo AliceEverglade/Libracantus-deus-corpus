@@ -3828,7 +3828,7 @@ TextureImporter:
       physicsShape:
       - - {x: -8, y: -8}
         - {x: -8, y: 0}
-        - {x: 8, y: 7}
+        - {x: 8, y: 8}
         - {x: 8, y: -8}
       tessellationDetail: 0
       bones: []
@@ -13456,7 +13456,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      main_lev_build_1_350: 1179258974
+      main_lev_build_1_442: -120225980
       main_lev_build_1_435: -1233841492
       main_lev_build_1_94: -1849868969
       main_lev_build_1_269: 1987819975
@@ -14074,8 +14074,8 @@ TextureImporter:
       main_lev_build_1_554: 1499119365
       main_lev_build_1_241: -1825350630
       main_lev_build_1_367: -1638758971
-      main_lev_build_1_442: -120225980
       main_lev_build_1_575: 2093323479
+      main_lev_build_1_350: 1179258974
       main_lev_build_1_221: 510174103
   spritePackingTag: 
   pSDRemoveMatte: 0

@@ -83,7 +83,6 @@ public class TimeManagement : MonoBehaviour
     {
         while(duration > 0)
         {
-            Debug.Log("timer running");
             duration -= interval;
             UpdateTimer(duration);
             yield return new WaitForSeconds(interval);
