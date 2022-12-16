@@ -17,9 +17,9 @@ TagManager:
   - Wall
   - VFX
   - Pixelate
-  - background
+  - Background
   - Enemy
-  - 
+  - PlayerHitDetection
   - 
   - 
   - 

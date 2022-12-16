@@ -126,6 +126,7 @@ public class PlayerMovement : MonoBehaviour
     #region Physics Variables
     [Header("Physics Variables")]
     [SerializeField] private float gravityFraction = 0.3f;
+    [SerializeField] private float gravityScaleStorage;
     #endregion
 
     #region Combat Variables
@@ -503,5 +504,7 @@ public class PlayerMovement : MonoBehaviour
         platformCollider.enabled = true;
         colliderOff = false;
     }
+
+    
 }
  

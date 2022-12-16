@@ -5,7 +5,7 @@ using System;
 
 public class Score : MonoBehaviour
 {
-    public int score;
+    public IntSO score;
     public static event Action<float> StartTimer;
     public static event Action<int> UpdateScore;
     [SerializeField] private float TimerDuration = 300;
@@ -23,7 +23,7 @@ public class Score : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        score = 0;
+        score.value = 0;
         StartTimer(TimerDuration);
     }
 
@@ -35,7 +35,7 @@ public class Score : MonoBehaviour
 
     private void AddScore()
     {
-        score++;
-        UpdateScore(score);
+        score.value++;
+        UpdateScore(score.value);
     }
 }

@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 163379899834004064}
-  - component: {fileID: 7867970033700230268}
-  m_Layer: 0
+  - component: {fileID: 7740488498850698002}
+  - component: {fileID: 5865613874586530835}
+  m_Layer: 3
   m_Name: Melee Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32,8 +33,21 @@ Transform:
   m_Father: {fileID: 8877437335158449492}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &7867970033700230268
-PolygonCollider2D:
+--- !u!114 &7740488498850698002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7157668298417356188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8f24ef6c093095489e029ea781995f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 3000
+--- !u!61 &5865613874586530835
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -55,13 +69,9 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 0, y: 1}
-      - {x: -0.95105654, y: 0.30901697}
-      - {x: -0.5877852, y: -0.80901706}
-      - {x: 0.58778536, y: -0.80901694}
-      - {x: 0.9510565, y: 0.30901712}
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &8877437335158449488
 GameObject:
   m_ObjectHideFlags: 0
@@ -78,8 +88,7 @@ GameObject:
   - component: {fileID: 8877437335158449498}
   - component: {fileID: 8877437335158449499}
   - component: {fileID: 8877437335158449497}
-  - component: {fileID: 8877437335158449496}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -142,7 +151,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 1930389042, guid: 5ee306b27cae8334cb56a2ef9125a15c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -194,6 +203,7 @@ MonoBehaviour:
   groundRayCastLength: 1.52
   groundRayCastOffset: {x: 0.74, y: -1.91, z: 0}
   isGrounded: 0
+  colliderOff: 0
   wallRayCastLength: 1.3
   wallRayCastOffset: {x: 0, y: -0.23, z: 0}
   onWall: 0
@@ -305,23 +315,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05829a608a535c14fb89ea9d8918fcce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dart: {fileID: 0}
-  attackNumber: 0
+  dart: {fileID: 7232581651049330873, guid: 6439e5897ad044347a0bda4a0e2ad4a3, type: 3}
+  attackNumber: 1
   dartCount: 10
   castTime: 2
   isAttacking: 0
   attackClicked: 0
-  attackResetCounter: -1
---- !u!114 &8877437335158449496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8877437335158449488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8f24ef6c093095489e029ea781995f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitboxes: []
+  attackResetCounter: 0

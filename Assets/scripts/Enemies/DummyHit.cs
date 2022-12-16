@@ -7,6 +7,8 @@ public class DummyHit : MonoBehaviour
 {
     private Animator anim;
     private Rigidbody2D rb;
+    [SerializeField] private TimeManagement timeManagement;
+    [SerializeField] private GameObject sound;
 
     [SerializeField] private float maxHP = 9999;
     [SerializeField] private float currentHP;
@@ -62,6 +64,7 @@ public class DummyHit : MonoBehaviour
         if(currentHP - damage <= 0)
         {
             AddScore();
+            Instantiate(sound);
             Destroy(gameObject);
         }
         else
@@ -87,6 +90,14 @@ public class DummyHit : MonoBehaviour
         else
         {
             healTimerValue -= Time.deltaTime;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            timeManagement.EndLevel();
         }
     }
 }

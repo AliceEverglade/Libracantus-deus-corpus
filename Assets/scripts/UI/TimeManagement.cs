@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class TimeManagement : MonoBehaviour
 {
@@ -12,13 +13,23 @@ public class TimeManagement : MonoBehaviour
     public static event Action<float> UpdateTimer;
     private float interval = 0.1f;
 
+    [SerializeField] private AudioSource backGroundMusic;
+    [SerializeField] private AudioSource timerSFX;
+
     private void OnEnable()
     {
         Score.StartTimer += Timer;
+        backGroundMusic.Play();
+        timerSFX.Play();
     }
     private void OnDisable()
     {
         Score.StartTimer -= Timer;
+    }
+
+    public void EndLevel()
+    {
+        SceneManager.LoadScene("EndScreen");
     }
 
     public void Stop(float duration)
@@ -89,6 +100,7 @@ public class TimeManagement : MonoBehaviour
         }
         if(duration < 0)
         {
+            EndLevel();
             yield return null;
         }
             
