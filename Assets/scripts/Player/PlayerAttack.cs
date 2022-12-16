@@ -88,7 +88,6 @@ public class PlayerAttack : MonoBehaviour
         {
             Debug.Log("attack hit '" + trigger.gameObject.name + "' for " + damage + " damage.");
             trigger.gameObject.GetComponentInParent<DummyHit>().TakeDamage(damage);
-            timeManagement.Stop(1);
         }
     }
 }

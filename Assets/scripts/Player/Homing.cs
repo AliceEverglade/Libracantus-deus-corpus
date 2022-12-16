@@ -7,12 +7,14 @@ public class Homing : MonoBehaviour
 {
     [SerializeField] private Transform target;
     [SerializeField] private GameObject[] targetList;
+    [SerializeField] private TimeManagement timeManagement;
     //[SerializeField] private GameObject deathEffect;
 
     [SerializeField] private float speed = 7;
     [SerializeField] private float rotateSpeed = 200;
     [SerializeField] private float damage = 200;
     [SerializeField] private float lifeTime = 3;
+    [SerializeField] private string targetTag;
     private Rigidbody2D rb;
     // Start is called before the first frame update
     void Start()
@@ -22,7 +24,7 @@ public class Homing : MonoBehaviour
 
     private void OnEnable()
     {
-        targetList = GameObject.FindGameObjectsWithTag("Enemy");
+        targetList = GameObject.FindGameObjectsWithTag(targetTag);
         Debug.Log(targetList);
         if (targetList.Length > 0)
         {
@@ -63,10 +65,18 @@ public class Homing : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
+        if (collision.CompareTag(targetTag))
         {
-            collision.gameObject.GetComponent<DummyHit>().TakeDamage(damage);
-            Destroy(gameObject);
+            if(targetTag == "Enemy")
+            {
+                collision.gameObject.GetComponent<DummyHit>().TakeDamage(damage);
+                Destroy(gameObject);
+            }
+            else
+            {
+                timeManagement.EndLevel();
+            }
+            
         }
         
     }

@@ -45,7 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f24ef6c093095489e029ea781995f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeManagement: {fileID: 0}
   damage: 3000
+  gravityScaleStorage: 0
 --- !u!61 &5865613874586530835
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -90,7 +92,7 @@ GameObject:
   - component: {fileID: 8877437335158449497}
   m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -218,6 +220,7 @@ MonoBehaviour:
   edgeRayCastOffset: {x: 0.67, y: 0, z: 0}
   innerRayCastOffset: {x: 0.11, y: 0, z: 0}
   gravityFraction: 0.2
+  gravityScaleStorage: 0
   isAttacking: 0
   attack1Done: 0
   attack2Done: 0

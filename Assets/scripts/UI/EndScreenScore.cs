@@ -10,7 +10,7 @@ public class EndScreenScore : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        scoreText.text = "Score: " + score + ".";
+        scoreText.text = "Score: " + score.value.ToString() + ".";
     }
 
     // Update is called once per frame

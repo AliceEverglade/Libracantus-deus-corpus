@@ -76,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -123,10 +123,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 6031233496260953329, guid: 07d33ce95152c6f44b749c1275bcd6df, type: 3}
   targetList: []
+  timeManagement: {fileID: 0}
   speed: 50
   rotateSpeed: 500
   damage: 200
   lifeTime: 3
+  targetTag: Enemy
 --- !u!60 &7232581651049330878
 PolygonCollider2D:
   m_ObjectHideFlags: 0

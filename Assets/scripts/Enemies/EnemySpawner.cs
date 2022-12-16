@@ -22,7 +22,7 @@ public class EnemySpawner : MonoBehaviour
         enemyList = GameObject.FindGameObjectsWithTag("Enemy");
         if(enemyList.Length < maxEnemyCount && spawnDelayCounter < 0)
         {
-            spawnDelayCounter = spawnDelay;
+            spawnDelayCounter = enemyList.Length / maxEnemyCount * spawnDelay;
             Instantiate(prefab, new Vector3(transform.position.x + Random.Range(-distance, distance), transform.position.y,transform.position.z), Quaternion.identity);
         }
         else

@@ -97,7 +97,7 @@ public class DummyHit : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            timeManagement.EndLevel();
+            //timeManagement.EndLevel();
         }
     }
 }
